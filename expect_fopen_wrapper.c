@@ -25,10 +25,10 @@
 
 #if PHP_MAJOR_VERSION >= 7
 php_stream *php_expect_stream_open (php_stream_wrapper *wrapper, const char *command, const char *mode, int options, 
-                           zend_string **opened_command, php_stream_context *context STREAMS_DC TSRMLS_DC)
+                           zend_string **opened_command, php_stream_context *context STREAMS_DC )
 #else
 php_stream *php_expect_stream_open (php_stream_wrapper *wrapper, char *command, char *mode, int options, 
-							  char **opened_command, php_stream_context *context STREAMS_DC TSRMLS_DC)
+							  char **opened_command, php_stream_context *context STREAMS_DC )
 #endif
 {
 	FILE *fp;
@@ -57,7 +57,7 @@ php_stream *php_expect_stream_open (php_stream_wrapper *wrapper, char *command, 
 	return NULL;
 }
 
-static int php_expect_stream_close (php_stream_wrapper *wrapper, php_stream *stream TSRMLS_DC)
+static int php_expect_stream_close (php_stream_wrapper *wrapper, php_stream *stream )
 {
 #if PHP_MAJOR_VERSION >= 7
     zval* z_pid = &(stream->wrapperdata);

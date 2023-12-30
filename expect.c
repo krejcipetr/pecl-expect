@@ -162,7 +162,7 @@ static PHP_INI_MH(OnSetExpectLogFile)
 		php_stream* stream = php_stream_open_wrapper (new_value, "a", 0, NULL);
 #endif
 		if (!stream) {
-			php_error_docref (NULL TSRMLS_CC, E_ERROR, "could not open log file for writing");
+			php_error_docref (NULL , E_ERROR, "could not open log file for writing");
 			return FAILURE;
 		}
 		stream->flags |= PHP_STREAM_FLAG_NO_SEEK;
@@ -192,7 +192,7 @@ PHP_INI_END()
 /* {{{ PHP_MINIT_FUNCTION */
 PHP_MINIT_FUNCTION(expect)
 {
-	php_register_url_stream_wrapper("expect", &php_expect_wrapper TSRMLS_CC);
+	php_register_url_stream_wrapper("expect", &php_expect_wrapper );
 
 	REGISTER_LONG_CONSTANT("EXP_GLOB", exp_glob, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("EXP_EXACT", exp_exact, CONST_CS | CONST_PERSISTENT);
@@ -205,12 +205,12 @@ PHP_MINIT_FUNCTION(expect)
 
 	Tcl_Interp *interp = Tcl_CreateInterp();
 	if (Tcl_Init(interp) == TCL_ERROR) {
-		php_error_docref (NULL TSRMLS_CC, E_ERROR, 
+		php_error_docref (NULL , E_ERROR, 
 			"Unable to initialize TCL interpreter: %s", Tcl_GetStringResult (interp));
 		return FAILURE;
 	}
 	if (Expect_Init(interp) == TCL_ERROR) {
-		php_error_docref (NULL TSRMLS_CC, E_ERROR,
+		php_error_docref (NULL , E_ERROR,
 			"Unable to initialize Expect: %s", Tcl_GetStringResult (interp));
 		return FAILURE;
 	}
@@ -223,7 +223,7 @@ PHP_MINIT_FUNCTION(expect)
 /* {{{ PHP_MSHUTDOWN_FUNCTION */
 PHP_MSHUTDOWN_FUNCTION(expect)
 {
-	php_unregister_url_stream_wrapper("expect" TSRMLS_CC);
+	php_unregister_url_stream_wrapper("expect" );
 
 	UNREGISTER_INI_ENTRIES();
 	
@@ -268,9 +268,9 @@ PHP_FUNCTION(expect_popen)
 	if (ZEND_NUM_ARGS() != 1) { WRONG_PARAM_COUNT; }
 
 #if PHP_MAJOR_VERSION >= 7
-    if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "S", &command) == FAILURE) {
+    if (zend_parse_parameters (ZEND_NUM_ARGS() , "S", &command) == FAILURE) {
 #else
-	if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "s", &command, &command_len) == FAILURE) {
+	if (zend_parse_parameters (ZEND_NUM_ARGS() , "s", &command, &command_len) == FAILURE) {
 #endif
 		return;
 	}
@@ -318,7 +318,7 @@ PHP_FUNCTION(expect_expectl)
 	
 	if (ZEND_NUM_ARGS() < 2 || ZEND_NUM_ARGS() > 3) { WRONG_PARAM_COUNT; }
 
-	if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "ra|z/", &z_stream, &z_cases, &z_match) == FAILURE) {
+	if (zend_parse_parameters (ZEND_NUM_ARGS() , "ra|z/", &z_stream, &z_cases, &z_match) == FAILURE) {
 		return;
 	}
 
@@ -333,7 +333,7 @@ PHP_FUNCTION(expect_expectl)
 #else
 	if (!stream->wrapperdata) {
 #endif
-		php_error_docref (NULL TSRMLS_CC, E_ERROR, "supplied argument is not a valid stream resource");
+		php_error_docref (NULL , E_ERROR, "supplied argument is not a valid stream resource");
 		return;
 	}
 
@@ -363,7 +363,7 @@ PHP_FUNCTION(expect_expectl)
 		if (Z_TYPE_PP(z_case) != IS_ARRAY) {
 #endif
 			efree (ecases);
-			php_error_docref (NULL TSRMLS_CC, E_ERROR, "expect case must be an array");
+			php_error_docref (NULL , E_ERROR, "expect case must be an array");
 			return;
 		}
 
@@ -377,7 +377,7 @@ PHP_FUNCTION(expect_expectl)
 		if (zend_hash_index_find(Z_ARRVAL_PP(z_case), 0, (void **)&z_pattern) != SUCCESS) {
 #endif
 			efree (ecases);
-			php_error_docref (NULL TSRMLS_CC, E_ERROR, "missing parameter for pattern at index: 0");
+			php_error_docref (NULL , E_ERROR, "missing parameter for pattern at index: 0");
 			return;
 		}
 #if PHP_MAJOR_VERSION >= 7
@@ -386,7 +386,7 @@ PHP_FUNCTION(expect_expectl)
 		if (Z_TYPE_PP(z_pattern) != IS_STRING) {
 #endif
 			efree (ecases);
-			php_error_docref (NULL TSRMLS_CC, E_ERROR, "pattern must be of string type");
+			php_error_docref (NULL , E_ERROR, "pattern must be of string type");
 			return;
 		}
 #if PHP_MAJOR_VERSION >= 7
@@ -402,7 +402,7 @@ PHP_FUNCTION(expect_expectl)
 		if (zend_hash_index_find(Z_ARRVAL_PP(z_case), 1, (void **)&z_value) != SUCCESS) {
 #endif
 			efree (ecases);
-			php_error_docref (NULL TSRMLS_CC, E_ERROR, "missing parameter for value at index: 1");
+			php_error_docref (NULL , E_ERROR, "missing parameter for value at index: 1");
 			return;
 		}
 		ecases_ptr->value = key;
@@ -416,7 +416,7 @@ PHP_FUNCTION(expect_expectl)
 			if (Z_TYPE_PP(z_exp_type) != IS_LONG) {
 #endif
 				efree (ecases);
-				php_error_docref (NULL TSRMLS_CC, E_ERROR, "expression type must be an integer constant");
+				php_error_docref (NULL , E_ERROR, "expression type must be an integer constant");
 				return;
 			}
 #if PHP_MAJOR_VERSION >= 7
@@ -425,7 +425,7 @@ PHP_FUNCTION(expect_expectl)
 			if (Z_LVAL_PP(z_exp_type) != exp_glob && Z_LVAL_PP(z_exp_type) != exp_exact && Z_LVAL_PP(z_exp_type) != exp_regexp) {
 #endif
 				efree (ecases);
-				php_error_docref (NULL TSRMLS_CC, E_ERROR, "expression type must be either EXPECT_GLOB, EXPECT_EXACT or EXPECT_REGEXP");
+				php_error_docref (NULL , E_ERROR, "expression type must be either EXPECT_GLOB, EXPECT_EXACT or EXPECT_REGEXP");
 				return;
 			}
 #if PHP_MAJOR_VERSION >= 7
